@@ -1,3 +1,4 @@
+@import 'utilities';
 
 * {
     padding: 0;
@@ -816,6 +817,18 @@ body {
 
 button[type="submit"] {
     /* background: none; */
+}
+
+.indicator {
+    background: rgba(250, 0, 0, .6);
+    height: 30px;
+    padding: 5px !important;
+    @include centerize();
+
+    &>.problem {
+        color: white;
+        list-style: none;
+    }
 }
 
 /*# sourceMappingURL=login-up.css.map */

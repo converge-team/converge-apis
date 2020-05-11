@@ -86,3 +86,8 @@ $paddings: (1, 2, 3, 4);
     }
 }
 
+@mixin centerize() {
+   display: flex;
+   justify-content: center;
+   align-items: center; 
+}

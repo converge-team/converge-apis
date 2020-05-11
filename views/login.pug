@@ -6,6 +6,7 @@ html(lang="en")
     title Login
     link(rel="stylesheet", href="./css/login-up.css")
   body
+    -var messages = getMessages();
     #main.flat-theme.--main
       .form-container.flat-theme.--container
         #slider.account-action.flat-theme.--account-action
@@ -27,7 +28,13 @@ html(lang="en")
           button#switch.action-btn.flat-theme.--btn.alt-btn
             span Create an account.
 
+        if messages.error
+          each msg in messages.error
+            .indicator
+              span.problem= msg
+
         .form-wrapper.wrapper-inactive
+
           form#create-account.form-active(data-active="false", action="/create_account", method="POST")
             .form-content-cont
               .input-field-cont
@@ -70,6 +77,7 @@ html(lang="en")
 
 
         .form-wrapper
+
           form#sign-in(data-active="true",action="/login", method="POST")
             .form-content-cont
               .input-field-cont
@@ -77,7 +85,7 @@ html(lang="en")
                 label(for="username")
                   span Username or email
               .input-field-cont
-                input#password.flat-theme.--input.password(data-active="true", type="password", name="password", autocomplete="new-password", required="required")
+                input#password.flat-theme.--input.password(data-active="true", type="password", name="password", autocomplete="new-password")
                 label(for="password")
                   span Password
               button.action-btn.flat-theme.--btn(type="submit")

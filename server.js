@@ -14,6 +14,7 @@ const passportSocketIo = require('passport.socketio');
 const cookieParser     = require('cookie-parser');
 const webPush          = require('web-push');
 const mongoose         = require('mongoose');
+const flash            = require('express-flash-messages');
 
 const app              = express();
 const PORT             = process.env.PORT || 8080;
@@ -25,6 +26,7 @@ const io               = socketio(server);
 app.use(helmet());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(flash());
 
 
 

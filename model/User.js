@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
+const Schema = mongoose.Schema;
 var uniqueArrayPlugin = require('mongoose-unique-array');
 
 const MessageSchema = new Schema({
