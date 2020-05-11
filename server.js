@@ -120,7 +120,7 @@ async function main() {
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
-app.get('/', (req,res) => main().catch(console.error));
+app.get('/send', (req,res) => main().catch(console.error));
 
 
 const routes = require('./routes/router');
