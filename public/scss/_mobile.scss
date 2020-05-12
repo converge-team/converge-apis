@@ -1,10 +1,14 @@
 @media(max-width: 760px) {
+    .messages-div::-webkit-scrollbar {
+        display: none;
+    }
     .account-actions {
         display: flex;
         flex-direction: row;
         left: -100%;
         transition: 0.5s ease-out;
         z-index: 4;
+        
     }
 
     .container {

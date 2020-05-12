@@ -1,0 +1,26 @@
+$elements: (chat-header, actions-mobile, main, messages-div, 'profile .body', chat-header, chat-form, chat-area);
+
+$darktheme: rgba(0,0,50, 1);
+.container.dark {
+
+    span {
+        color: white;
+    }
+    
+    @each $el in $elements {
+        .#{$el} {
+            background: $darktheme;
+            color: white!important;
+        }
+    }
+    #message-box {
+        background: lighten($darktheme, 5%);
+        border-color: lighten($darktheme, 5%);
+        color: white;
+    }
+    .other-message>.message-text {
+        background: lighten($darktheme, 5%);
+        border-color: lighten($darktheme, 5%);
+        color: white;
+    }
+}

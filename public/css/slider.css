@@ -6,6 +6,7 @@
   background: #5d0ebe;
   width: 60%;
   height: 100vh;
+  box-shadow: 2px 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .account-actions .main .profile-details {
@@ -36,6 +37,9 @@
 }
 
 @media (max-width: 760px) {
+  .messages-div::-webkit-scrollbar {
+    display: none;
+  }
   .account-actions {
     display: flex;
     flex-direction: row;

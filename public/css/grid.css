@@ -53,6 +53,7 @@
 .profile .body .profile-actions > .action-list {
   padding-inline-start: 0;
   list-style-type: none;
+  height: inherit;
 }
 
 .profile .body .profile-actions > .action-list .p-action {
@@ -440,6 +441,10 @@ body {
   transform: scale(0.9);
 }
 
+.emoji-div {
+  color: white;
+}
+
 .form-icon {
   font-size: 35px;
 }
@@ -690,7 +695,66 @@ input.search-txt::placeholder, input.search-txt:-ms-input-placeholder {
   border-radius: 0;
 }
 
+.container.dark span {
+  color: white;
+}
+
+.container.dark .chat-header {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .actions-mobile {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .main {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .messages-div {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .profile .body {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .chat-header {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .chat-form {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark .chat-area {
+  background: #000032;
+  color: white !important;
+}
+
+.container.dark #message-box {
+  background: #00004c;
+  border-color: #00004c;
+  color: white;
+}
+
+.container.dark .other-message > .message-text {
+  background: #00004c;
+  border-color: #00004c;
+  color: white;
+}
+
 @media (max-width: 760px) {
+  .messages-div::-webkit-scrollbar {
+    display: none;
+  }
   .account-actions {
     display: flex;
     flex-direction: row;
