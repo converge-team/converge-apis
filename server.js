@@ -33,8 +33,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(flash());
 
-console.log(process.env.NODE_ENV)
-
 const sessionStore = new MongoStore({
     mongooseConnection: mongoose.connection
 });
