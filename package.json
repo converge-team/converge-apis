@@ -2,7 +2,7 @@
   "name": "converge",
   "version": "1.0.0",
   "description": "currently in developement # converge",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon --ignore sessions/ server.js",
     "test": "mocha tests/test.js"
