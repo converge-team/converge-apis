@@ -137,7 +137,8 @@ const User = require('./model/User');
 
 
 mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }, (err, db) => {
-    if(!err) console.log('DB connected');
+    if(err) console.log('DB Error: ', err)
+    if(!err && db) console.log('DB connected');
 
     auth(app, User)
     routes(app, User);
