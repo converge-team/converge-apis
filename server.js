@@ -68,7 +68,7 @@ app.use(express.static(path.join(process.cwd(), 'public')))
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, 'views'))
 app.use('/auth', authRoutes)
-app.use('/messages', messagesRoutes);
+app.use('/message', messagesRoutes);
 
 //push subscription
 
