@@ -65,7 +65,15 @@ var userSchema = new Schema({
         required: true,
         enum: ['male', 'female']
     },
+    api_token: {
+        required: true,
+        type: String
+    },
     lastSeen: Date,
+    is_verified: {
+        type: Boolean,
+        default: false,
+    },
     friends: [friendSchema],
     pushSubscription: String,
     profile_photo_url: String,

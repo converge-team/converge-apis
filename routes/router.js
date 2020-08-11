@@ -9,14 +9,14 @@ const fs = require('fs');
 
 module.exports = function(app, Model) {
     app.route('/login')
-    .get((req, res) => {
-        res.render('login')
-    }).post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
-        res.redirect('/');
-    });
+        .get((req, res) => {
+            res.render('login')
+        }).post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
+            res.redirect('/');
+        });
 
     app.get('/tests', (req, res) => {
-        res.send('yay')
+        res.send('yay');
     })
 
     .route('/create_account')
@@ -234,11 +234,11 @@ module.exports = function(app, Model) {
         })})
     })
 
-    app.get('/friends', (req, res) => {
-        res.render('friends_list', {friends: req.user.friends.filter((friend) => {
-            return friend.friends_status === true;
-        })});
-    })
+    // app.get('/friends', (req, res) => {
+    //     res.render('friends_list', {friends: req.user.friends.filter((friend) => {
+    //         return friend.friends_status === true;
+    //     })});
+    // })
 
     app.get('/all', (req, res) => {
         Model.find({}, (err, data) => {
@@ -272,7 +272,7 @@ module.exports = function(app, Model) {
                 user.friends.forEach((friend) => {
                     if(username === friend.username) {
                         const messages = friend.messages;
-                        res.send(messages);
+                        res.json(messages);
                     }
                 });
             }
