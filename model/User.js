@@ -66,7 +66,7 @@ var userSchema = new Schema({
         enum: ['male', 'female']
     },
     api_token: {
-        required: true,
+        // required: true,
         type: String
     },
     lastSeen: Date,
