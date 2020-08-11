@@ -14,13 +14,13 @@ const webPushOptions = {
 }
 
 
-function socketConnection(io, Model) {
+function socketConnection(io, Model, app) {
     const payload = 'New Notification';
 
 
-    const users = []
+    const users = [];
 
-    io.on('connection', (socket)=>{
+    io.on('connection', (socket) => {
         console.log('we have a new connection')
         console.log(socket.id)
 
@@ -305,52 +305,8 @@ function socketConnection(io, Model) {
         })
 
     })
-
-    const reqnsp = io.of('/requests');
-    reqnsp.on('connection', (socket) => {
-        console.log('connected to /requests');
-        console.log(socket.request.user.id)
-
-        socket.on('confirm request', (data) => {
-            console.log('username: ', data)
-            function confirmReq(err, user) {
-                user.friends.forEach((friend) => {
-                    if(friend.username === data) {
-                        friend.friends_status = true
-
-                        user.save((err, data) => {
-                            if(!err && data) {
-                                reqnsp.to(socket.id).emit('confirmed', true);
-                                return socket.request.user
-                            }
-                            
-                        })
-                    }
-                })
-            }
-            const other_user = Model.findById(socket.request.user.id, confirmReq);
-            
-            Model.findOne({username: data}, (err, user) => {
-                user.friends.forEach((friend) => {
-                    if(friend.username === socket.request.user.username) {
-                        friend.friends_status = true;
-
-                        user.save((err, data) => {
-                            if(err) console.log(err) 
-                        })
-                    }
-                })
-            })
-        })
-    })
-
-
-    /* Defining functions
-    * for reuse
-    */
-
-    
 }
+
 
 function areFriends(user1, user2, Model) {
     let truthOne, truthTwo
