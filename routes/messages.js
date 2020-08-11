@@ -7,5 +7,6 @@ const messageController = require('../controllers/messages.controller');
 router.use(auth);
 router.get('/', messageController.getMessages);
 router.get('/individual', messageController.getMessageForUser);
+router.get('/friends', messageController.getFriendAndLastMessage);
 
 module.exports = router;

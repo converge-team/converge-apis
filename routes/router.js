@@ -234,11 +234,11 @@ module.exports = function(app, Model) {
         })})
     })
 
-    app.get('/friends', (req, res) => {
-        res.render('friends_list', {friends: req.user.friends.filter((friend) => {
-            return friend.friends_status === true;
-        })});
-    })
+    // app.get('/friends', (req, res) => {
+    //     res.render('friends_list', {friends: req.user.friends.filter((friend) => {
+    //         return friend.friends_status === true;
+    //     })});
+    // })
 
     app.get('/all', (req, res) => {
         Model.find({}, (err, data) => {
