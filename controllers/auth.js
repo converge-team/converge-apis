@@ -13,6 +13,7 @@ exports.register = async (req, res) => {
     try {
 
         const { username, email, first_name, last_name, gender, password } = req.body;
+        console.log(req.body);
 
         let userThere = await User.findOne({ username });
     
@@ -25,7 +26,7 @@ exports.register = async (req, res) => {
             email,
             first_name,
             last_name,
-            gender,
+            // gender,
             password: bcrypt.hashSync(password, 12),
             lastSeen: new Date(),
             api_token: 'null'
@@ -38,31 +39,33 @@ exports.register = async (req, res) => {
         delete objToSign.__v;
         
 
-        newUser.save()
-            .then(async result => {
-                let cipher = await crypt.createCipher(JSON.stringify({email: objToSign.email, username: objToSign.username}));
-                let verificationUrl = `${req.protocol}://${req.headers.host}/auth/verify-email/${cipher}`;
 
-                sendMail({
-                    to: result.email,
-                    from: 'judgegodwins@gmail.com',
-                    subject: 'Account Verification',
-                    html: `<a href="${verificationUrl}" style="text-align: center;"><button>Verify-Email</button></a>`        
-                },
-                (error, data) => {
-                    if(error) return Response.failure({ res, error, readMessage: "Something went wrong while creating the user", statusCode: 500});
-                    console.log(data);
+        let cipher = await crypt.createCipher(JSON.stringify({email: objToSign.email, username: objToSign.username}));
+        let verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${cipher}`;
+
+        sendMail({
+            to: objToSign.email,
+            from: 'judgegodwins@gmail.com',
+            subject: 'Account Verification',
+            html: `<a href="${verificationUrl}" style="text-align: center;"><button>Verify-Email</button></a>`        
+        },
+        (error, data) => {
+            if(error) return Response.failure({ res, error, readMessage: "Something went wrong while creating the user", statusCode: 500});
+            console.log(data);
+            newUser.save()
+                .then(async result => {
                     Response.success({
                         res,
-                        message: "User registered successfully. Check your email for a verification link",
+                        message: "User registered successfully. Check your email for the verification link",
                         statusCode: 200,
                         data: {
                             user: result
                         }
                     });
                 })
-            })
-            .catch(error => Response.failure({ res, error, readMessage: "Something went wrong while creating the user", statusCode: 500}))
+                .catch(error => Response.failure({ res, error, readMessage: "Something went wrong while creating the user", statusCode: 500}))
+        })
+            
 
     } catch(error) {
         Response.failure({ res, error, statusCode: 500, readMessage: "Internal Server Error" })

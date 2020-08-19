@@ -63,6 +63,13 @@ exports.getFriendAndLastMessage = (req, res) => {
                     statusCode: 400,
                 });
 
+            if(user.friends.length === 0) 
+                return Response.failure({
+                    res, 
+                    readMessage: "No_Messages",
+                    statusCode: 200,    
+                });
+                 
             let friendWithMessage = [];
             user.friends.forEach(friend => {
                 let friendToPush = Object.assign({}, friend.toObject())

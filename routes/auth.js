@@ -16,4 +16,8 @@ router.get('/all', (req, res) => {
     require('../model/User').find({}, (err, users) => res.json(users));
 })
 
+router.get('/rem', (req, res) => {
+    require('../model/User').remove({}, (err, users) => res.json(users));
+})
+
 module.exports = router;
