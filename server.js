@@ -11,7 +11,6 @@ const socketioJwt      = require('socketio-jwt');
 const session          = require('express-session');
 const MongoStore       = require('connect-mongo')(session);
 // const passport         = require('passport');
-const passportSocketIo = require('passport.socketio');
 const cookieParser     = require('cookie-parser');
 const webPush          = require('web-push');
 const mongoose         = require('mongoose');
@@ -48,8 +47,6 @@ io.use(socketAuth);
 // }));
 
 app.use(express.static(path.join(process.cwd(), 'public')))
-app.set('view engine', 'pug')
-app.set('views', path.join(__dirname, 'views'))
 app.use('/auth', authRoutes )
 app.use('/message', messagesRoutes);
 
@@ -68,13 +65,7 @@ app.post('/subscribepush', (req, res) => {
     })
 })
 
-app.get('/test', (req, res) => {
-    res.render('test')
-})
 
-
-const routes = require('./routes/router');
-const auth = require('./auth');
 const socket = require('./socket').socketConnection;
 const User = require('./model/User');
 
@@ -84,7 +75,6 @@ mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: tru
     if(!err && db) console.log('DB connected');
 
     // auth(app, User)
-    routes(app, User);
     socket(io, User, app);
     server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 })
