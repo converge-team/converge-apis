@@ -1,7 +1,7 @@
 const webPush = require('web-push');
 
 const publicVapidKey = 'BOrQPL1CeyjJNJydzDcDjUozdvYjJFCeZLPUgvtl3Bp33kgUFzd8lvuvs79hFdgpbSPjb9N_kTDq265juEbPGLk',
-      privateVapidKey = process.env.VAPID_KEY;
+    privateVapidKey = process.env.VAPID_KEY;
 
 const webPushOptions = {
     gcmAPIKey: process.env.GCMAPIKEY,
@@ -37,6 +37,8 @@ function socketConnection(io, Model, app) {
 
         // socket.id = socket.request.user.id;
 
+        socket.on('yoyo', () => console.log('yoyoyoyoyoyuou7o'))
+
         socket.broadcast.emit('connected', {
             username: socket.username,
             status: socket.status
@@ -46,22 +48,22 @@ function socketConnection(io, Model, app) {
             let person = users.find((x) => {
                 return x.name == data.username;
             });
-            
-            if(!person) {
 
-                Model.findOne({username: data.username}).select({password: 0, id: 0}).exec((err, user) => {
-                    callback(user.lastSeen, true)
+            if (!person) {
+
+                Model.findOne({ username: data.username }).select({ password: 0, id: 0 }).exec((err, user) => {
+                    callback({ username: data.username, time: user.lastSeen }, true)
                 })
 
             } else {
 
-                callback(person.status, false);
+                callback({username: person.name, id: person.id }, false);
             }
 
         })
 
-        
-        socket.broadcast.emit('online', {username: socket.request.user.username})
+
+        socket.broadcast.emit('online', { username: socket.request.user.username, id: socket.id })
 
 
         // Model.findOne({username: socket.username}, (err, user) => {
@@ -75,22 +77,19 @@ function socketConnection(io, Model, app) {
         //     })
         // })
 
-        socket.on('disconnect', ()=>{
+        socket.on('disconnect', () => {
             console.log("user gone", socket.id)
-            
-            socket.broadcast.emit('disconnected', {username: socket.request.user.username, time: new Date()})
 
-            Model.findOne({username: socket.request.user.username}, (err, user) => {
+            Model.findOne({ username: socket.request.user.username }, (err, user) => {
                 user.lastSeen = new Date();
                 user.save((err, data) => {
-                    if(err) console.log(err);
+                    socket.broadcast.emit('offline', { username: socket.request.user.username, time: data.lastSeen });
+
+                    users.splice(users.indexOf(users.filter((x) => {
+                        return x.id === socket.id;
+                    })[0]), 1);
                 })
             })
-
-            users.splice(users.indexOf(users.filter((x) => {
-                return x.id === socket.id;
-            })[0]), 1);
-
 
         });
 
@@ -100,37 +99,25 @@ function socketConnection(io, Model, app) {
         })
 
         var currentJoined
-        socket.on('join', (data) => {
-            let friend = users.find((user) => {
-                return user.name === data.friend;
-            });
+        socket.on('join', ({friend, socketId}) => {
 
-            if(friend) {
-                socket.join(friend.id);
-                currentJoined = friend.id;
-                console.log('joined friend')
-            } else {
-                currentJoined = null;
-                console.log('couldn\'t join')
-            }
+            socket.join(socketId);
 
-            console.log('currentJoined on join: ', currentJoined);
-            console.log(users)
         })
 
         socket.on('read', (data) => {
             console.log('user has read')
             console.log(data.username, ' has read')
-            socket.to(currentJoined).emit('read', {username: data.username})
+            socket.to(currentJoined).emit('read', { username: data.username })
         })
 
-        socket.on('typing', data => {
-            
-            socket.to(currentJoined).emit('typing', {username: data.username})
+        socket.on('typing', ({socketId}) => {
+
+            socket.to(socketId).emit('typing', { username: socket.request.user.username })
         })
-        
-        socket.on('stop_typing', data => {
-            socket.to(currentJoined).emit('stop_typing', {username: data.username})
+
+        socket.on('stop_typing', ({socketId}) => {
+            socket.to(socketId).emit('stop_typing', { username: socket.request.user.username })
         })
         // socket.on('delivered', (data) => {
         //     let target = users.find((x) => {
@@ -143,15 +130,15 @@ function socketConnection(io, Model, app) {
 
         // io.to(socket.id).emit('handle', handle)
         socket.on('new_message', (data) => {
-
+            console.log(data.socketId);
             let senderFullname;
 
             console.log('to: ', data.toUser)
-            Model.findOne({username: socket.request.user.username}).select({password: 0}).exec((err, sender) => {
+            Model.findOne({ username: socket.request.user.username }).select({ password: 0 }).exec((err, sender) => {
 
                 senderFullname = sender.first_name + ' ' + sender.last_name
 
-                Model.findOne({username: data.toUser}).select({password: 0}).exec((err, receiver) => {
+                Model.findOne({ username: data.toUser }).select({ password: 0 }).exec((err, receiver) => {
 
                     let movingFriend = indexOfFriend(sender, receiver.username);
 
@@ -160,15 +147,15 @@ function socketConnection(io, Model, app) {
                             return x.username === findee;
                         })[0];
                     }
-                    
-                    if(movingFriend) {
+
+                    if (movingFriend) {
                         sender.friends[sender.friends.indexOf(indexOfFriend(sender, receiver.username))].messages.push({
                             content: data.message,
                             type: 'sent',
                             time: new Date()
                         })
 
-                        
+
                         receiver.friends[receiver.friends.indexOf(indexOfFriend(receiver, sender.username))].messages.push({
                             content: data.message,
                             type: 'received',
@@ -210,17 +197,17 @@ function socketConnection(io, Model, app) {
                             })[0].id;
                             emitNewMsg(sender, user1, receiver);
                             emitNewMsg(receiver, user2, sender);
-                        } catch(err) {
+                        } catch (err) {
                             console.log(err);
                             emitNewMsg(receiver, user2, sender);
                         }
-                        
+
                         console.log('user1: ', user1);
 
                         console.log('user2: ', user2)
 
                         function emitNewMsg(user, userSocket, otherUser) {
-                            console.log('emitting new msgs', );
+                            console.log('emitting new msgs',);
                             let userIndex = user.friends.find((x) => {
                                 return x.username === otherUser.username;
                             });
@@ -243,31 +230,31 @@ function socketConnection(io, Model, app) {
 
 
                     sender.save((err, d) => {
-                        if(err) console.log(err);
+                        if (err) console.log(err);
                         receiver.save((err, d1) => {
-                            if(err) console.log(err)
-                            socket.to(currentJoined).emit('new_msg', {
-                                username: socket.username, 
-                                fullname: sender.first_name + ' ' + sender.last_name, 
-                                message: data.message
+                            if (err) console.log(err)
+                            socket.to(data.socketId).emit('new_msg', {
+                                username: socket.username,
+                                fullname: sender.first_name + ' ' + sender.last_name,
+                                message: { content: data.message, time: new Date(), type: "received" }
                             })
                         })
                     })
 
-                    if(receiver.pushSubscription) {
+                    if (receiver.pushSubscription) {
 
                         const pushSubscription = JSON.parse(receiver.pushSubscription);
 
-                        const payload = JSON.stringify({"title": senderFullname, "message": data.message });
+                        const payload = JSON.stringify({ "title": senderFullname, "message": data.message });
 
                         webPush.sendNotification(
                             pushSubscription,
                             payload,
                             webPushOptions
                         )
-                        .catch(err => {
-                            console.error('push error: ', err);
-                        })
+                            .catch(err => {
+                                console.error('push error: ', err);
+                            })
                     }
 
                 })
@@ -280,7 +267,7 @@ function socketConnection(io, Model, app) {
         //     Model.findOne({username: socket.request.user.username}, (err, user) => {
         //         user.friends.forEach((friend) => {
         //             if(friend.username === data.username) {
-                        
+
         //                 friend.messages.push({
         //                     content: data.message,
         //                     type: 'received'
@@ -297,7 +284,7 @@ function socketConnection(io, Model, app) {
         socket.on('suscribe', (data) => {
             console.log(data.username, ' ', 'trying to reconnect')
             users.forEach((user) => {
-                if(user.name === data.username) {
+                if (user.name === data.username) {
                     socket.join(user.id)
                     console.log(user.id, ' -> ', socket.id)
                 }
@@ -314,7 +301,7 @@ function areFriends(user1, user2, Model) {
     let check = (user, otherUser, truth) => {
 
         user.friends.forEach((friend) => {
-            if(friend.username == otherUser && friend.friend_status == true) {
+            if (friend.username == otherUser && friend.friend_status == true) {
                 truth = true
             } else {
                 truth = false;
@@ -322,16 +309,16 @@ function areFriends(user1, user2, Model) {
         })
     }
 
-    Model.findOne({username: user1}, (err, user) => {
-        if(err) console.log(err);
+    Model.findOne({ username: user1 }, (err, user) => {
+        if (err) console.log(err);
 
         check(user, user2, truthOne);
 
-        Model.findOne({username: user2}, (err, user) => {
+        Model.findOne({ username: user2 }, (err, user) => {
             check(user, user1, truthTwo);
         })
     })
-    if(truthOne == truthTwo) return true;
+    if (truthOne == truthTwo) return true;
     else return false;
 }
 

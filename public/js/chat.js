@@ -336,7 +336,7 @@ $(function() {
 
     socket.on('typing', data => {
         if($('#header-username').data('username') == data.username) {
-            $('#lastseen').html('typing..');    
+            $('#lastseen').html('typing..');
         }
         let msgSpan = document.querySelectorAll('.msg-span');
         let readStatus = document.querySelectorAll('.read-status');
