@@ -17,7 +17,7 @@ router.get('/all', (req, res) => {
 })
 
 router.get('/rem', (req, res) => {
-    require('../model/User').remove({}, (err, users) => res.json(users));
+    require('../model/User').remove({username: "judger"}, (err, users) => res.json(users));
 })
 
 module.exports = router;

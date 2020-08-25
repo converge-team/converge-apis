@@ -13,9 +13,8 @@ exports.register = async (req, res) => {
     try {
 
         const { username, email, first_name, last_name, gender, password } = req.body;
-        console.log(req.body);
 
-        let userThere = await User.findOne({ username });
+        let userThere = await User.findOne({ username }) || await User.findOne({ email });
     
         if(userThere)
             return Response.failure({ res, statusCode: 400, readMessage: "The username is already registered" });
@@ -45,7 +44,7 @@ exports.register = async (req, res) => {
 
         sendMail({
             to: objToSign.email,
-            from: 'judgegodwins@gmail.com',
+            from: 'welome@convrge.live',
             subject: 'Account Verification',
             html: `<a href="${verificationUrl}" style="text-align: center;"><button>Verify-Email</button></a>`        
         },
@@ -63,7 +62,9 @@ exports.register = async (req, res) => {
                         }
                     });
                 })
-                .catch(error => Response.failure({ res, error, readMessage: "Something went wrong while creating the user", statusCode: 500}))
+                .catch(error => { 
+                    Response.failure({ res, error, readMessage: "Something went wrong while creating the user", statusCode: 500})
+                })
         })
             
 
