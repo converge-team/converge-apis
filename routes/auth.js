@@ -7,6 +7,9 @@ const checkEmailValidity = require('../middlewares/checkEmail');
 router.post('/register', checkEmailValidity, AuthController.register);
 router.post('/login', AuthController.login);
 router.get('/verify-email/:encryptedInfo', AuthController.verifyEmail);
+router.get('/authenticate', verifyToken, AuthController.authenticate);
+
+
 router.get('/test', verifyToken, (req, res) => {
     res.json(req.user);
 })

@@ -7,6 +7,18 @@ const crypt = require('../utils/crypt');
 const verifyToken = require('../middlewares/auth');
 const sendMail = require('../utils/sendmail');
 
+const objectify = (mongoObject, leaveToken) => {
+    
+    let objToSign = Object.assign({}, mongoObject.toObject());
+    delete objToSign.friends;
+
+    if(!leaveToken) delete objToSign.api_token;
+
+    delete objToSign.password;
+    delete objToSign.__v;
+
+    return objToSign;
+}
 
 exports.register = async (req, res) => {
 
@@ -31,14 +43,8 @@ exports.register = async (req, res) => {
             api_token: 'null'
         });
 
-        let objToSign = Object.assign({}, newUser.toObject());
-        delete objToSign.friends;
-        delete objToSign.api_token;
-        delete objToSign.password;
-        delete objToSign.__v;
+        let objToSign = objectify(newUser);
         
-
-
         let cipher = await crypt.createCipher(JSON.stringify({email: objToSign.email, username: objToSign.username}));
         let verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${cipher}`;
 
@@ -95,12 +101,7 @@ exports.login = (req, res) => {
 
                 if(!result) return Response.failure({ res, statusCode: 400, readMessage: "Username or password incorrect" });
                 
-                const objToSign = Object.assign({}, user.toObject(), );
-                delete objToSign.friends;
-                delete objToSign.api_token;
-                delete objToSign.password;
-                delete objToSign.__v;
-                delete objToSign.pushSubscription;
+                const objToSign = objectify(user);
 
                 let token = jwt.sign(
                     objToSign,
@@ -118,7 +119,7 @@ exports.login = (req, res) => {
                             statusCode: 200,
                             message: "Successfully logged in",
                             data: {
-                                user: result,
+                                user: objectify(result, true),
                                 api_token: result.api_token
                             }
                         })
@@ -138,18 +139,13 @@ exports.login = (req, res) => {
 exports.verifyEmail = (req, res) => {
     let stringifiedInfo = crypt.decipherHash(req.params.encryptedInfo);
     let info = JSON.parse(stringifiedInfo);
-    console.log('info >>> ', info);
+
     User.findOne({ email: info.email })
         .then(user => {
             if(!user) return Response.failure({ res, statusCode: 400, readMessage: "User not found" });
             user.is_verified = true;
             
-            const objToSign = Object.assign({}, user.toObject(), );
-            delete objToSign.friends;
-            delete objToSign.api_token;
-            delete objToSign.password;
-            delete objToSign.__v;
-            delete objToSign.pushSubscription;
+            const objToSign = objectify(user);
 
 
             const token = jwt.sign(
@@ -169,11 +165,15 @@ exports.verifyEmail = (req, res) => {
                         statusCode: 200,
                         message: "Cheers! Your account has been verified.",
                         data: {
-                            user: result,
+                            user: objectify(result, true),
                             api_token: result.api_token
                         }
                     })  
                 })
 
         })
+}
+
+exports.authenticate = (req, res) => {
+    if(req.user) return Response.success({ res, statusCode: 200, message: "Authenticated" })
 }
