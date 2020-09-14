@@ -24,11 +24,9 @@ if (process.env.NODE_ENV === 'development') {
         let username = req.params.username
         require('../model/User').remove({ username }, (err, users) => res.json(users));
     })
-
+    router.get('/rem', (req, res) => {
+        require('../model/User').remove({}, (err, users) => res.json(users));
+    })
 }
-
-router.get('/rem', (req, res) => {
-    require('../model/User').remove({}, (err, users) => res.json(users));
-})
 
 module.exports = router;

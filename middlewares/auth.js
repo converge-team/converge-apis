@@ -9,7 +9,6 @@ const verifyToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_KEY, async function(error, decoded) {
         const user = await User.findOne({ api_token: token });
-        console.log('user: ', user)
         if(error) return Response.failure({res, error, statusCode: 500, readMessage: "Internal Server Error"})
         if(!decoded || !user) {
             return Response.failure({
