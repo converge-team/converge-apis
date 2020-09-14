@@ -73,8 +73,7 @@ exports.getFriendAndLastMessage = (req, res) => {
             let friendWithMessage = [];
             user.friends.forEach(friend => {
                 let friendToPush = Object.assign({}, friend.toObject())
-                friendToPush.lastMessage = friendToPush.messages[friendToPush.messages.length-1];
-                delete friendToPush.messages;
+                friendToPush.messages = [friendToPush.messages[friendToPush.messages.length-1]];
                 friendWithMessage.push(friendToPush)
             });
 

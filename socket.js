@@ -25,6 +25,7 @@ function socketConnection(io, Model, app) {
         console.log(socket.id)
 
         socket.username = socket.request.user.username;
+        socket.userId = socket.request.user._id
         socket.status = 'online';
 
         users.push({
@@ -36,8 +37,6 @@ function socketConnection(io, Model, app) {
         console.log('users: ', users)
 
         // socket.id = socket.request.user.id;
-
-        socket.on('yoyo', () => console.log('yoyoyoyoyoyuou7o'))
 
         socket.broadcast.emit('connected', {
             username: socket.username,
@@ -93,11 +92,6 @@ function socketConnection(io, Model, app) {
 
         });
 
-
-        socket.on('backbutton', (data) => {
-            console.log('backbutton clicked');
-        })
-
         var currentJoined
         socket.on('join', ({friend, socketId}) => {
 
@@ -143,9 +137,9 @@ function socketConnection(io, Model, app) {
                     let movingFriend = indexOfFriend(sender, receiver.username);
 
                     function indexOfFriend(owner, findee) {
-                        return owner.friends.filter((x) => {
+                        return owner.friends.find((x) => {
                             return x.username === findee;
-                        })[0];
+                        });
                     }
 
                     if (movingFriend) {
@@ -163,6 +157,7 @@ function socketConnection(io, Model, app) {
                         })
                     } else {
                         sender.friends.push({
+                            _id: receiver._id,
                             username: receiver.username,
                             first_name: receiver.first_name,
                             last_name: receiver.last_name,
@@ -175,6 +170,7 @@ function socketConnection(io, Model, app) {
                         })
 
                         receiver.friends.push({
+                            _id: sender._id,
                             username: sender.username,
                             first_name: sender.first_name,
                             last_name: sender.last_name,
@@ -234,7 +230,7 @@ function socketConnection(io, Model, app) {
                         receiver.save((err, d1) => {
                             if (err) console.log(err)
                             socket.to(data.socketId).emit('new_msg', {
-                                username: socket.username,
+                                userId: socket.userId,
                                 fullname: sender.first_name + ' ' + sender.last_name,
                                 message: { content: data.message, time: new Date(), type: "received" }
                             })

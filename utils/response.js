@@ -18,7 +18,7 @@ class Response {
     }
 
     static success({ res, message, statusCode, data }) {
-        res.status(statusCode).json({
+        res.status(statusCode || 200).json({
             success: true,
             message: message,
             data: {

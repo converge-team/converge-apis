@@ -27,8 +27,9 @@ const server           = http.Server(app)
 const io               = socketio(server);
 
 //routes
-const authRoutes = require('./routes/auth');
-const messagesRoutes = require('./routes/messages');
+const authRouter = require('./routes/auth');
+const messagesRouter = require('./routes/messages');
+const searchRouter = require('./routes/search');
 
 app.use(helmet());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -47,8 +48,10 @@ io.use(socketAuth);
 // }));
 
 app.use(express.static(path.join(process.cwd(), 'public')))
-app.use('/auth', authRoutes )
-app.use('/message', messagesRoutes);
+
+app.use('/auth', authRouter )
+app.use('/message', messagesRouter);
+app.use('/search', searchRouter)
 
 //push subscription
 
