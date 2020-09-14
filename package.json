@@ -4,7 +4,7 @@
   "description": "currently in developement # converge",
   "main": "server.js",
   "scripts": {
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start": "node server.js",
     "dev:server": "nodemon server.js",
     "test": "mocha tests/test.js"
   },
