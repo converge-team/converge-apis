@@ -6,7 +6,7 @@ const Response = require('../utils/response');
 exports.searchForPerson = (req, res) => {
     const { keyword } = req.query;
 
-    User.find({ username: { $in: [new RegExp(keyword, 'gi')] } })
+    User.find({ username: { $ne: req.user.username, $in: [new RegExp(keyword, 'gi')] } })
         .select({password: 0, __v: 0, api_token: 0, friends: 0, pushSubscription: 0 })
         .then(docs => {
             Response.success({
