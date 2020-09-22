@@ -27,7 +27,6 @@ const updateRouter = require('./routes/update');
 app.use(helmet());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(flash());
 
 app.use(cors());
 
