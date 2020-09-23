@@ -8,15 +8,15 @@ const helmet           = require('helmet');
 const bodyParser       = require('body-parser');
 const mongoose         = require('mongoose');
 const cors             = require('cors');
-const socketAuth       = require('./middlewares/socketAuth');
-const SocketServer     = require('./socket');
+const socketServer     = require('./socket.server');
 const User = require('./model/User');
 
 const app              = express();
 const PORT             = process.env.PORT || 8000;
 
 const server           = http.Server(app);
-const socketServer     = new SocketServer(server, socketAuth);
+
+socketServer.startSocketServer(server);
 
 //routes
 const authRouter = require('./routes/auth');

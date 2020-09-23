@@ -1,5 +1,6 @@
 const webPush = require('web-push');
 const socketio = require('socket.io');
+const socketAuth = require('./middlewares/socketAuth');
 
 const User = require('./model/User')
 
@@ -19,24 +20,27 @@ const webPushOptions = {
 
 class SocketServer {
 
-    constructor(httpServer, socketAuth) {
+    constructor(socketAuth) {
         this.users = [];
 
-        this.io = socketio(httpServer);
-
-        this.io.use(socketAuth);
+        this.io = null;
 
         this.handleSocketConnection = this.handleSocketConnection.bind(this);
 
+
+        this.sockets = []
+    }
+
+    startSocketServer(httpServer) {
+        this.io =   socketio(httpServer);
+        this.io.use(socketAuth);
+
         this.handleSocketConnection();
 
-        this.socket = null
     }
 
     handleSocketConnection() {
         this.io.on('connection', (socket) => {
-
-            this.socket = socket;
 
             console.log('we have a new connection')
             console.log(socket.id)
@@ -44,6 +48,9 @@ class SocketServer {
             socket.username = socket.request.user.username;
             socket.userId = socket.request.user._id
             socket.status = 'online';
+
+
+            this.sockets.push(socket)
     
             this.users.push({
                 name: socket.username,
@@ -141,10 +148,8 @@ class SocketServer {
     
             // io.to(socket.id).emit('handle', handle)
             socket.on('new_message', (data) => {
-                console.log(data.socketId);
                 let senderFullname;
     
-                console.log('to: ', data.toUser)
                 User.findOne({ username: socket.request.user.username }).select({ password: 0 }).exec((err, sender) => {
     
                     senderFullname = sender.first_name + ' ' + sender.last_name
@@ -197,50 +202,8 @@ class SocketServer {
                                     type: 'received',
                                     time: new Date()
                                 }]
-                            })
-    
-    
-                            let user1 = this.users.filter((x) => {
-                                return x.name == sender.username;
-                            })[0].id,
-                                user2;
-                            try {
-                                user2 = this.users.filter((x) => {
-                                    return x.name == receiver.username;
-                                })[0].id;
-                                emitNewMsg(sender, user1, receiver);
-                                emitNewMsg(receiver, user2, sender);
-                            } catch (err) {
-                                console.log(err);
-                                emitNewMsg(receiver, user2, sender);
-                            }
-    
-                            console.log('user1: ', user1);
-    
-                            console.log('user2: ', user2)
-    
-                            function emitNewMsg(user, userSocket, otherUser) {
-                                console.log('emitting new msgs',);
-                                let userIndex = user.friends.find((x) => {
-                                    return x.username === otherUser.username;
-                                });
-                                console.log('socket: ', socket);
-                                console.log('userIndex: ', userIndex);
-                                console.log('socket rooms: ', socket.rooms);
-    
-                                socket.join(userSocket);
-                                console.log('socket rooms after joining: ', socket.rooms);
-                                socket.to(userSocket).emit('add_new_messages', {
-                                    username: otherUser.username,
-                                    messages: user.friends[user.friends.indexOf(userIndex)].messages
-                                })
-    
-                            }
-    
-    
+                            })    
                         }
-    
-    
     
                         sender.save((err, d) => {
                             if (err) console.log(err);
@@ -281,5 +244,6 @@ class SocketServer {
 
 }
 
+const socketServer = new SocketServer(socketAuth);
 
-module.exports = SocketServer
+module.exports = socketServer;
