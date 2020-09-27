@@ -20,11 +20,11 @@ exports.updatePhoto = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        const oldPublicId = user.profile_photo_url.substring(user.profile_photo_url.lastIndexOf('/') + 1, user.profile_photo_url.lastIndexOf('.'));
+        const oldPublicId = user.profile_photo_url && user.profile_photo_url.substring(user.profile_photo_url.lastIndexOf('/') + 1, user.profile_photo_url.lastIndexOf('.'));
 
         const uploadedPhoto = await cloudinary.uploader.upload(file.path);
 
-        cloudinary.uploader.destroy(oldPublicId);
+        if (oldPublicId) cloudinary.uploader.destroy(oldPublicId);
 
         user.profile_photo_url = uploadedPhoto.secure_url;
 
