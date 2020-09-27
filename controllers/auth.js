@@ -173,8 +173,9 @@ exports.verifyEmail = (req, res) => {
         })
 }
 
-exports.authenticate = (req, res) => {
-    if (req.user) return Response.success({ res, statusCode: 200, message: "Authenticated" })
+exports.authenticate = async (req, res) => {
+    const user = await User.findOne({ email: req.user.email })
+    if (req.user) return Response.success({ res, statusCode: 200, message: "Authenticated", data: { user } })
 }
 
 exports.validateBody = async (req, res) => {

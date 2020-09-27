@@ -27,6 +27,18 @@ class Response {
             }
         })
     }
+
+    static serverErrorResponse(error, res, message) {
+        console.warn(error);
+
+        return res.status(500).json({
+            success: false,
+            message: message || 'Internal server error',
+            error: {
+                message: error.message
+            }
+        })
+    }
 }
 
 

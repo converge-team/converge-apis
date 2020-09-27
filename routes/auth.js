@@ -20,6 +20,15 @@ if (process.env.NODE_ENV === 'development') {
         require('../model/User').find({}, (err, users) => res.json(users));
     })
 
+    router.get('/update', (req, res) => {
+        require('../model/User').updateMany(
+            { friends: { $elemMatch: { username: 'judgegodwins' } } }, 
+            { "$set": { "friends.$.profile_photo":  "https://testy.com/yoolo" }},
+            { new: true }
+        )
+        .then(docs => res.json(docs));
+    })
+
     router.get('/rem/:username', (req, res) => {
         let username = req.params.username
         require('../model/User').remove({ username }, (err, users) => res.json(users));
