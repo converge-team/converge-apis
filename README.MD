@@ -2,7 +2,7 @@
 ## Chat application using websockets
 Currently in developement.
 
-Live App: [a link](https://github.com/judgegodwins)
+Live App: [dev.convrge.live](https://dev.convrge.live)
 
 ## To contribute 
 Clone the repo.
