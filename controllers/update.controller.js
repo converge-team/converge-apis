@@ -16,6 +16,8 @@ exports.updatePhoto = async (req, res) => {
         const { email, username } = req.user
         const { file } = req;
 
+        console.log(file)
+
         const userSocket = sockets.find(socket => socket.username === username);
 
         const user = await User.findOne({ email });
